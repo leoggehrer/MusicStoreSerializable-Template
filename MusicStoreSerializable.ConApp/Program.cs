@@ -12,11 +12,14 @@
             Console.WriteLine($"Loaded {context.AlbumSet.Count} albums.");
             Console.WriteLine($"Loaded {context.TrackSet.Count} tracks.");
 
-            var genre = new Logic.Models.Genre
+            if (context.GenreSet.Any(g => g.Name == "MyGenre") == false)
             {
-                Name = "MyGenre"
-            };
-            //context.GenreSet.Add(genre);
+                var genre = new Logic.Models.Genre
+                {
+                    Name = "MyGenre"
+                };
+                context.GenreSet.Add(genre);
+            }
 
             Console.WriteLine("Saving changes...");
             context.SaveChanges();

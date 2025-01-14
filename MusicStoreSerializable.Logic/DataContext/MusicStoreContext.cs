@@ -47,15 +47,71 @@ namespace MusicStoreSerializable.Logic.DataContext
         /// </summary>
         internal void CreateRelationships()
         {
-            throw new NotImplementedException();
+            AlbumSet.ForEach(a =>
+            {
+                a.Artist = ArtistSet.FirstOrDefault(e => e.Id == a.ArtistId);
+                a.Tracks = TrackSet.Where(t => t.AlbumId == a.Id).ToList();
+            });
+            GenreSet.ForEach(g =>
+            {
+                g.Tracks = TrackSet.Where(t => t.GenreId == g.Id).ToList();
+            });
+            ArtistSet.ForEach(a =>
+            {
+                a.Albums = AlbumSet.Where(al => al.ArtistId == a.Id).ToList();
+            });
+            TrackSet.ForEach(t =>
+            {
+                t.Album = AlbumSet.FirstOrDefault(e => e.Id == t.AlbumId);
+                t.Genre = GenreSet.FirstOrDefault(e => e.Id == t.GenreId);
+            });
         }
 
         /// <summary>
         /// Validates relationships between entities.
         /// </summary>
-        internal void ValidateRelationships()
+        internal void ValidateObjectModel()
         {
-            throw new NotImplementedException();
+            AlbumSet.ForEach(a =>
+            {
+                if (a.Artist == default)
+                {
+                    throw new InvalidOperationException($"Artist not found for album {a.Title}");
+                }
+            });
+            ArtistSet.ForEach(a =>
+            {
+                a.Albums.ForEach(al =>
+                {
+                    if (al.Artist == default)
+                    {
+                        throw new InvalidOperationException($"Artist Id mismatch for album {al.Title}");
+                    }
+                });
+            });
+            // Check if Artist.Name is unique.
+            if (ArtistSet.GroupBy( a => a.Name.ToLower()).Count() != ArtistSet.Count())
+            {
+                throw new InvalidOperationException($"Artist.Name is not unique.");
+            }
+
+            // Check if Genre.Name is unique.
+            if (GenreSet.GroupBy(g => g.Name.ToLower()).Count() != GenreSet.Count())
+            {
+                throw new InvalidOperationException($"Genre.Name is not unique.");
+            }
+
+            TrackSet.ForEach(t =>
+            {
+                if (t.Genre == default)
+                {
+                    throw new InvalidOperationException($"Genre not found for track {t.Title}");
+                }
+                if (t.Album == default)
+                {
+                    throw new InvalidOperationException($"Album not found for track {t.Title}");
+                }
+            });
         }
 
         /// <summary>
@@ -71,7 +127,12 @@ namespace MusicStoreSerializable.Logic.DataContext
         /// </summary>
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+            CreateRelationships();
+            ValidateObjectModel();
+
+            var jsonString = JsonSerializer.Serialize<MusicStoreContext>(this, JsonOptions);
+
+            File.WriteAllText(DbFile, jsonString);
         }
         #endregion methods
     }

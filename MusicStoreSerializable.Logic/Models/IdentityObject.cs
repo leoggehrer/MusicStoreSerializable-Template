@@ -1,4 +1,6 @@
-﻿namespace MusicStoreSerializable.Logic.Models
+﻿using System.Text.Json.Serialization;
+
+namespace MusicStoreSerializable.Logic.Models
 {
     /// <summary>
     /// Represents an abstract base class for identifiable objects.

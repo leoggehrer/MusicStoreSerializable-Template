@@ -15,7 +15,25 @@ namespace MusicStoreSerializable.Logic.DataContext
         /// <returns>An instance of IMusicStoreContext.</returns>
         public static IMusicStoreContext CreateMusicStoreContext()
         {
-            throw new NotImplementedException();
+            MusicStoreContext? result = null;
+
+            if (File.Exists(MusicStoreContext.DbFile))
+            {
+                string jsonString = File.ReadAllText(MusicStoreContext.DbFile);
+
+                result = JsonSerializer.Deserialize<MusicStoreContext>(jsonString, MusicStoreContext.JsonOptions);
+                result?.CreateRelationships();
+            }
+            else
+            {
+                result = new MusicStoreContext();
+
+                result.GenreSet = DataLoader.LoadGenresFromCsv("data/Genres.csv");
+                result.AlbumSet = DataLoader.LoadAlbumsFromCsv("data/Albums.csv");
+                result.ArtistSet = DataLoader.LoadArtistsFromCsv("data/Artists.csv");
+                result.TrackSet = DataLoader.LoadTracksFromCsv("data/Tracks.csv");
+            }
+            return result!;
         }
     }
 }

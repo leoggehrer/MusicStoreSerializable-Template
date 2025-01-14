@@ -1,4 +1,6 @@
-﻿namespace MusicStoreSerializable.Logic.Models
+﻿using System.Text.Json.Serialization;
+
+namespace MusicStoreSerializable.Logic.Models
 {
     /// <summary>
     /// Represents an artist in the music store.
@@ -17,6 +19,7 @@
         /// <summary>
         /// Gets or sets the albums associated with the artist.
         /// </summary>
+        [JsonIgnore]
         public List<Album> Albums { get; set; } = [];
         #endregion Navigation Properties
 

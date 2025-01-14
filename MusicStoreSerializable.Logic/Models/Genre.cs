@@ -1,4 +1,6 @@
-﻿namespace MusicStoreSerializable.Logic.Models
+﻿using System.Text.Json.Serialization;
+
+namespace MusicStoreSerializable.Logic.Models
 {
     /// <summary>
     /// Represents a music genre with an identifiable ID and a name.
@@ -16,8 +18,9 @@
         #region Navigation Properties
         /// <summary>
         /// Gets or sets the tracks associated with the genre.
-        /// </summary>
-        public List<Track> Tracks { get; set; } = new List<Track>();
+        /// </summary
+        [JsonIgnore]
+        public List<Track> Tracks { get; set; } = [];
         #endregion Navigation Properties
 
         /// <summary>
